@@ -26,7 +26,7 @@ class Rectangle:
     def __str__(self):
         return f"Rectangle(width={self.width}, height={self.height})"
 
-# Тестування
+# Перевірки
 r1 = Rectangle(2, 4)
 r2 = Rectangle(3, 6)
 
