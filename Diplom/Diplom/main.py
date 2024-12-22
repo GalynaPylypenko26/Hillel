@@ -3,7 +3,6 @@ from person import Person
 
 
 def main_menu():
-    """Відображає основне меню."""
     print("\nМеню:")
     print("1. Додати нову людину")
     print("2. Пошук записів")
@@ -13,7 +12,6 @@ def main_menu():
 
 
 def main():
-    """Головна функція програми."""
     db = Database()
 
     while True:
@@ -52,7 +50,13 @@ def main():
 
         elif choice == "4":
             filename = input("Введіть назву файлу для завантаження: ")
-            db.load_from_file(filename)
+            try:
+                db.load_from_file(filename)
+                print("Дані завантажено успішно!")
+            except FileNotFoundError:
+                print(f"Файл {filename} не знайдено.")
+            except ValueError as e:
+                print(f"Помилка у форматі даних: {e}")
 
         elif choice == "5":
             print("До побачення!")
@@ -64,3 +68,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

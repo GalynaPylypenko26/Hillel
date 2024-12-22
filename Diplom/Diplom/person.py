@@ -8,19 +8,27 @@ class Person:
         self.patronymic = patronymic.capitalize() if patronymic else ""
         self.birth_date = self.validate_date(birth_date)
         self.death_date = self.validate_date(death_date) if death_date else None
+
+        # Перевірка статі
+        if gender.lower() not in ("m", "f"):
+            raise ValueError("Некоректно вказана стать. Допустимі значення: 'm' або 'f'.")
+
         self.gender = gender.lower()
 
     def validate_date(self, date_str):
-        """Перевіряє та перетворює дату з різних форматів у формат datetime."""
+        """Перевіряємо, чи є рядок коректною датою, підтримуючи кілька форматів."""
         for fmt in ("%d.%m.%Y", "%d %m %Y", "%d/%m/%Y", "%d-%m-%Y"):
             try:
-                return datetime.strptime(date_str, fmt)
+                # Перетворення у datetime-об'єкт
+                date = datetime.strptime(date_str, fmt)
+                return date
             except ValueError:
                 continue
-        raise ValueError(f"Некоректний формат дати: {date_str}")
+        raise ValueError(f"Введена дата '{date_str}' є некоректною. "
+                         f"Спробуйте один із форматів: дд.мм.рррр, дд мм рррр, дд/мм/рррр, дд-мм-рррр.")
 
     def calculate_age(self, reference_date=None):
-        """Обчислює вік на основі дати народження та смерті або поточної дати."""
+        """Обчислюємо вік на основі дати народження та смерті або поточної дати."""
         reference_date = reference_date or datetime.now()
         end_date = self.death_date or reference_date
         age = end_date.year - self.birth_date.year - (
@@ -29,7 +37,7 @@ class Person:
         return age
 
     def get_age_suffix(self, age):
-        """Повертає правильне закінчення для слова 'рік'."""
+        """Повертаємо правильне закінчення для слова 'рік'."""
         if 11 <= age % 100 <= 14:
             return "років"
         elif age % 10 == 1:
@@ -40,13 +48,13 @@ class Person:
             return "років"
 
     def matches(self, query):
-        """Перевіряє, чи відповідає пошуковий запит даним про людину."""
+        """Перевіряємо, чи відповідає пошуковий запит даним про людину."""
         query = query.lower()
         full_name = f"{self.first_name} {self.last_name} {self.patronymic}".lower()
         return query in full_name
 
     def __str__(self):
-        """Повертає текстове представлення об'єкта Person."""
+        """Повертаємо текстове представлення об'єкта Person."""
         # Обчислення віку та правильного закінчення для слова "рік"
         age = self.calculate_age()
         age_suffix = self.get_age_suffix(age)
@@ -79,14 +87,14 @@ class Person:
                 f"{born_str} {self.birth_date.strftime('%d.%m.%Y')}. {death_str}.")
 
     def serialize(self):
-        """Серіалізує дані для збереження у текстовому файлі."""
+        """Серіалізуємо дані для збереження у текстовому файлі."""
         birth_date = self.birth_date.strftime("%d.%m.%Y")
         death_date = self.death_date.strftime("%d.%m.%Y") if self.death_date else ""
         return f"{self.first_name}|{self.last_name}|{self.patronymic}|{birth_date}|{death_date}|{self.gender}"
 
     @staticmethod
     def deserialize(line):
-        """Створює об'єкт Person із рядка."""
+        """Створюємо об'єкт Person із текстового рядка (десеріалізуємо)."""
         parts = line.strip().split("|")
         if len(parts) != 6:
             raise ValueError(f"Некоректний запис: {line}")
@@ -98,3 +106,4 @@ class Person:
             death_date=parts[4] if parts[4] else None,
             gender=parts[5],
         )
+
