@@ -21,6 +21,15 @@ class Person:
             try:
                 # Перетворення у datetime-об'єкт
                 date = datetime.strptime(date_str, fmt)
+
+
+                # Додаткова перевірка: чи є дата дійсною
+                if date.day < 1 or date.day > 31:
+                    raise ValueError("Некоректний день.")
+                if date.month < 1 or date.month > 12:
+                    raise ValueError("Некоректний місяць.")
+
+
                 return date
             except ValueError:
                 continue
